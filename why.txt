@@ -1,0 +1,89 @@
+8*3 , into 3*3 ? 
+
+// 0 1 2      0 0 0  == (--i , --j)  (++i ,  0)  (--i , ++j) 
+// 3 4 5  ==  0 1 0     (0 , --j)    (0  ,  0)    (0 , ++j) 
+// 6 7 8      0 0 0     (++i , --j)  (--i , 0)   (++i , ++j) 
+
+
+
+
+
+
+
+
+// void escapdxount(vector<vector<char>>& board ,int ay,int ax ,int k_s,int k_e,bool who,char choice){ //in here we would be counting the blocks we can escape  ,  we have to know which picec has is attacking the king , also we are aksi naking if king has attacked direckly then piece must blocked it's path or move king removed form danger , this function kind logical main do all the paths and other , while checkmate function make sure we had send corrected piece or path to see and after declare victory
+//     int x=abs(ay-k_s);
+//     int y=abs(ax-k_e);    
+//     if(who==0 && lo_p.empty()){
+//       for(int i=0;i<9;i++){
+//           lo_p[i]=1;   // make king position safe for end , like if do that this might work 
+//         }
+//       lo_p[4]=0;
+//     }else if(who==1 && Up_p.empty()){
+//       for(int i=0;i<9;i++){
+//           Up_p[i]=1;
+//         }
+//       Up_p[4]=0;
+//     }
+// // we don't need this x==y , may be check it after 
+//     if ((x<=1 && y<=1) || ( x==y) ){ // that means there in the innner circle  , now we have see which block are going attacked also there blocked or not 
+//     choice;
+//     switch (choice) {  
+//       case 'r':
+//       case 'R':
+//       case 'q':
+//       case 'Q':
+//         if (x<=1 || y<=1){  // we see here if the king has rook to blocked it's path , and also to see it coming up or down , we would do like this (king - attacker ) > ( k+1 - a), means attacker coming from that direct so now we can call the empty same as above 
+//             if(x==0 || y==0){  // direct acttacked 
+
+//             }else{
+//               // just for i don't forget how to put king inner circle , i did this 
+//               // first we need find out which block it's attacked then convent into number after that take diff form king number ( k_n - attcked_n ), if it's  and from which direction 
+//               // (king postions-8-1) - ( what ever positioned begin attacked ) then tracked or refence with map , done  , int q = 16 / 8; int result = q*3 + 16%8;so the result is last thing ,
+//               //  diff between those , king_postion and attcker , if it's negative make positive ,also same for other side , 
+//               // after that add to king X and y , find which we is attacke is that vertical or horizontal , for that do attacker - find piece( which is attacked here ), if x==0 then horizontal , same for opposite , after find we have blocked other two piece if vertical +1 or -1 ( put all the three 123 , or 678 ),horizontal make +3 or -3( 036, 258) , two times , to find out what refence it has then we can do this jojo() it funtion which can help here and explanation 
+               
+//             }
+//          }
+//          if(choice=='r' || choice=='R'){
+//           break;
+//          }
+//       case 'b':
+//       case 'B':  // grouped — handles both lowercase and uppercase
+//       int z=abs(x-y);
+//         if(z<=2){
+//           switch(z){
+//             case 0:  // direct attacked at king , called empty path , after that if not see any piece want to move , after see if avaliable king at safe place , if not checkmate
+//             break;
+//             case 1:  // we check direction for making sure right place safe enough so king can move 
+//             break;
+//             case 2:  // not direct attacked at king   
+//             break;            
+//           }
+//         }
+//       break;
+
+//       case 'n':
+//       case 'N':   
+//           if (x<=3 || y<=3){  // as seen if any of the one become then it's sure attacked king 
+//             if(x==2 || y==2){ // direct attacked at king , move the king or capture the kinght
+
+//             };
+//           }
+//       break;
+
+//       case 'p':
+//       case 'P': // we had may made up the 9 shape u ,in which area if this looser comes they can only block kings path 
+
+//       break;
+
+//       }
+//     }
+// };
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+# Executables (assuming you follow the naming convention from your files)
+chessmoves
+board
+kingsecu
+
+PLAN.md
+
+# Alternatively, if you want to ignore ALL executables (no extension):
+# (Use this cautiously if you have scripts without extensions)
+# !/
+# *
+ # !*/
+ # !*.cpp
+ # !*.h
+ # !Makefile
+ # !.gitignore
+
+ # Compiled object files
+ *.o
+
+ # Build directories (if you start using cmake or other build tools later)
+ build/
+ bin/
+
+ # IDE/Editor specific files
+ .vscode/
+ .DS_Store
+ *.swp
+*.md
