@@ -11,6 +11,7 @@
 #include<iostream>
 #include<vector>
 #include<map>
+#include <algorithm>
 using namespace std;
 
 // ascii , position , i don't really need the pawn position they can only attack one block ahead , so do it removing is best move ,
@@ -28,6 +29,33 @@ map<int, vector<int>> pieces = {
     {80,  {48,49,50,51,52,53,54,55}}, // P
     {112, {8,9,10,11,12,13,14,15}}, // p
 };
+
+vector<int> temp={8,9,10,11,12,13,14,15,48,49,50,51,52,53,54,55,0,7,56,63,57,62,1,6,58,61,2,5,4,60,3,59};
+// int partition(int arr[], int low, int high) {
+//     int pivot = arr[high];
+//     int i = low - 1;
+
+//     for (int j = low; j < high; j++) {
+//         if (arr[j] < pivot) {
+//             i++;
+//             swap(arr[i], arr[j]);
+//         }
+//     }
+
+//     swap(arr[i + 1], arr[high]);
+
+//     return i + 1;
+// }
+
+// void quickSort(int arr[], int low, int high) {
+//     if (low < high) {
+//         int p = partition(arr, low, high);
+
+//         quickSort(arr, low, p - 1);
+//         quickSort(arr, p + 1, high);
+//     }
+// }
+
 
 map<int,bool> lo_p; // lower case pawn
 map<int,bool> Up_p; // higeher case pawn
@@ -156,20 +184,65 @@ bool direct_attacked(vector<vector<char>>& board ,int ay,int ax ,int ky,int kx){
       return false;
   }
 
-bool godgod(vector<vector<char>>& board ,int r,int king_p){
-    for(int i=0;i<=7;i++){
-      int j =(king_p+(r));
-      int k=(king_p+(r));
-      if((0<=j+k<=63) && board[j][k]!='.'){
-        return false;
+// bool godgod(vector<vector<char>>& board ,int r,int king_p){
+//     for(int i=0;i<=7;i++){
+//       int j =(king_p+(r));
+//       int k=(king_p+(r));
+//       if((0<=j+k<=63) && board[j][k]!='.'){
+//         return false;
+//       }
+//       king_p=j+k;
+//     }
+//     return true;
+// }
+
+bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
+  // ed-st = diff // so it carry charge or direction where to go 
+  int target=st+(diff);
+  int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
+  int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
+  int reset;   // used as reset point for another serach 
+  while(st<=ed){
+      
+      while (left <= right) {
+        
+        int mid = left + (right - left) / 2;
+       
+        if (arr[mid] == target) {
+          return true;
+        }
+
+        else if (arr[mid] < target) { 
+          if(mid - 1 >= 0 && target > arr[mid - 1]){
+            reset=mid;
+            break;
+          }
+          left = mid + 1;
+        }
+       
+        else {
+           if(mid + 1 <= right && target < arr[mid + 1]){
+            reset=mid;
+            break;
+          }
+          right = mid - 1;
+        }
       }
-      king_p=j+k;
+
+      if(diff<0){
+        right=reset;
+      }else{
+        left=reset;
+      }
+      st+=ed;
+      target+=(diff);
     }
-    return true;
+    return false;
 }
 
-bool indirect_attacked(vector<vector<char>>& board,char a){
-  int keep[6]={66,78,81,98,110,113};
+bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind the code , so don't need this shit char a first 
+  sort(temp.begin(), temp.end());
+  int keep[6]={66,81,82,98,113,114}; // 
   int postion=pieces[75][0];
   int st=3;
   int ed=5;
@@ -179,24 +252,44 @@ bool indirect_attacked(vector<vector<char>>& board,char a){
     postion=pieces[107][0];
   }
     for (int i=st;i<=ed;i++) {
-      for (int j=0;j<sizeof(int)/sizeof(pieces[keep[i]]).size();j++){
+      for (int j=0;j<pieces[keep[i]].size();j++){  //
+          int charge=1;
           int diff=pieces[keep[i]][j]-postion;    // this give distance between them 
-          if((a!='r') && (a!='R')  && (diff%9 == 0) || (diff%7 ==0)  ){ // how stop rook getting here ? , this give or tell it's would be bishop or queen ,now when got diff -5 , means piece is ahead of king so we minus from the king  ,,,
-            // godgod()  // wil call and give diff to , it would 9 or 7 , it will it diagonal number repeat , and u know godgod is doing or checking if those number has anything between them got it 
-            // (a!='r') && (a!='R')  && (diff%9 == 0) || (diff%7 ==0) , i think this would stop rook , first it let anything but small r came it will block in first plan and it's gone , assume now bigger rook came it not caught first trap abut other will stop which 1 and bcs 1 three dvide it's gone to right ?? 
-          }else if((a!='b') && (a!='B') && (diff%8==0)){ // now just have stop the // same here ? 
-              // bishop
-          }else if ((a!='b') && (a!='B') &&  (diff<=7)){ // this will never right , 
-            int i=abs(diff);   // here i had to came and check the things between king and rook in same raw
-            
-            while(i>=0){
-              if(diff>0){  // if diff plus as side it behind king means bigger number 
-                if(((postion/8)+7>=pieces[keep[i]][j]) && board[postion/8][(postion%8)+1]!='.')return false;   // ths's y i add this ?(postion/8)+7>=pieces[keep[i]][j] ,, this will make sure u don't for more then king raw okay 
-              }else{
-                if(((postion/8)-7<=pieces[keep[i]][j])&& board[postion/8][(postion%8)-1]!='.')return false;  // same here ?? 
-              }
-              i--;
+          if(diff<0){
+            charge=-1;
+          }
+          if((keep[i]!=82) && (keep[i]!=114)  && (diff%9 == 0) || (diff%7 ==0)  ){ // how stop rook getting here ? , this give or tell it's would be bishop or queen ,now when got diff -5 , means piece is ahead of king so we minus from the king  ,,,
+            {
+
+              // godgod()  // wil call and give diff to , it would 9 or 7 , it will it diagonal number repeat , and u know godgod is doing or checking if those number has anything between them got it 
+              // (a!='r') && (a!='R')  && (diff%9 == 0) || (diff%7 ==0) , i think this would stop rook , first it let anything but small r came it will block in first plan and it's gone , assume now bigger rook came it not caught first trap abut other will stop which 1 and bcs 1 three dvide it's gone to right ?? 
             }
+              if(diff%9 == 0){
+                diff=9;
+              }else{
+                diff=7;
+              }
+             binarySearch(temp,postion,pieces[keep[i]][j],diff*charge);
+          }else if((keep[i]!=66) && (keep[i]!=98) && (diff%8==0)){ // now just have stop the // same here ? 
+              binarySearch(temp,postion,pieces[keep[i]][j],diff*charge);
+          }else if ((keep[i]!=66) && (keep[i]!=98) &&  ((postion/8)==(pieces[keep[i]][j]/8)) ){ // this will never right , 
+            {
+
+              // int i=abs(diff);   // here i had to came and check the things between king and rook in same raw
+              
+              // find between king and 
+              // now run binary for the small 1 2 3 in binary okay ? 
+              
+              // while(i>=0){
+                //   if(diff>0){  // if diff plus as side it behind king means bigger number 
+                //     if(((postion/8)+7>=pieces[keep[i]][j]) && board[postion/8][(postion%8)+1]!='.')return false;   // ths's y i add this ?(postion/8)+7>=pieces[keep[i]][j] ,, this will make sure u don't for more then king raw okay 
+                //   }else{
+                  //     if(((postion/8)-7<=pieces[keep[i]][j])&& board[postion/8][(postion%8)-1]!='.')return false;  // same here ?? 
+                  //   }
+                  //   i--;
+                  // }
+              }
+              binarySearch(temp,postion,pieces[keep[i]][j],1*charge);
           }
       };
     }
