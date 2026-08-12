@@ -201,8 +201,9 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
   int target=st+(diff);
   int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
   int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
-  int reset;   // used as reset point for another serach 
-  while(st<=ed){
+  int reset=-1;   // used as reset point for another serach 
+  int step=abs(ed-st)/abs(diff);
+  while(step){      // what end is already small from beging bro ? 
       
       while (left <= right) {
         
@@ -213,6 +214,7 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
         }
 
         else if (arr[mid] < target) { 
+          // i'm going to left ? okay , and my target already become bigger then there is no way to check for thing from here to left anymore it's sorted array and uiniqe or pass value or it was never then ? so i choose new search from here okay ? 
           if(mid - 1 >= 0 && target > arr[mid - 1]){
             reset=mid;
             break;
@@ -221,6 +223,7 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
         }
        
         else {
+           // i'm going to right ? okay , and my target already become smaller then next mid+1 there is nothing more to left to check  
            if(mid + 1 <= right && target < arr[mid + 1]){
             reset=mid;
             break;
@@ -228,13 +231,14 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
           right = mid - 1;
         }
       }
-
-      if(diff<0){
-        right=reset;
-      }else{
-        left=reset;
+      if(reset!=-1){
+        if(diff<0){
+          right=reset;
+        }else{
+          left=reset;
+        }
       }
-      st+=ed;
+      step--;
       target+=(diff);
     }
     return false;
