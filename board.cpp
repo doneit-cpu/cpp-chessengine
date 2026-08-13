@@ -15,7 +15,7 @@
 using namespace std;
 
 // ascii , position , i don't really need the pawn position they can only attack one block ahead , so do it removing is best move ,
-map<int, vector<int>> pieces = {
+map<int, vector<int>> pieces = {     // make it for runtime or something like that , like ? dynamic which change thing on it's own something like that 
     {81,  {59}},                 // Q
     {113, {3}},                  // q
     {75,  {60}},                  // K  // we also don't need king here , bcs 
@@ -31,6 +31,7 @@ map<int, vector<int>> pieces = {
 };
 
 vector<int> temp={8,9,10,11,12,13,14,15,48,49,50,51,52,53,54,55,0,7,56,63,57,62,1,6,58,61,2,5,4,60,3,59};
+bool king_guard[9]={0,0,0,0,0,0,0,0,0};
 // int partition(int arr[], int low, int high) {
 //     int pivot = arr[high];
 //     int i = low - 1;
@@ -134,7 +135,7 @@ bool empaty_path(vector<vector<char>>& board, int ay,int ax,int dy,int dx){
 
 bool attack_af(char a , char b, int ay,int ax,int dy,int dx){
   // a attack b and remove b positoin from map
-  if(int(b) = 75 || 107 ) return false ; // u can't king and remove it got it  
+  if( (int(b)==75) || (int(b)==107) ) return false ; // u can't king and remove it got it  
   if(low_case(a)!=low_case(b)){  // this make sure i;m firendly fire (b position removed from the map)
     for(int i =0;i<=pieces[int(b)].size();i++){  // here we get every b piece postion of board (above i have map )
       if(pieces[int(b)][i]==(dy*8+dx)){ // here i check that attacked piece got from map
@@ -196,8 +197,9 @@ bool direct_attacked(vector<vector<char>>& board ,int ay,int ax ,int ky,int kx){
 //     return true;
 // }
 
-bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
+bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king) {
   // ed-st = diff // so it carry charge or direction where to go 
+  innergard=false;
   int target=st+(diff);
   int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
   int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
@@ -209,7 +211,14 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
         
         int mid = left + (right - left) / 2;
        
+        if(innergard && target==king){
+          target+=diff;
+        }
+
         if (arr[mid] == target) {
+          if(innergard){
+
+          };
           return true;
         }
 
@@ -243,6 +252,7 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff) {
     }
     return false;
 }
+
 
 bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind the code , so don't need this shit char a first 
   sort(temp.begin(), temp.end());
@@ -301,19 +311,77 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
 }
 
 
+void king_innner_di(int ks){
+  // in this we can take king as center piece and we see other blocks ,
+   int sum=0;
+   int kr = ks / 8;
+   int kc = ks % 8;
+   int loopcount=1;
+  // it start from king top most lefted ? and then goes on to to down-right ? it's lise zig zagg 
+  int dr[]={-1, -1, -1, 0, 0, 1, 1, 1};
+  int dc[]={-1, 0, 1, -1, 1, -1, 0, 1};
+
+  for(int d=0;d<8;d++){
+    int r=kr+dr[d];
+    int c=kc+dc[d];
+
+    while(r>=0 && r<8 && c >=0 && c <8 ){
+      char piece=board[r][c];
+
+      if(piece !='.' && low_case(piece)==low_case(ks)) break;
+
+      if(piece !='.'){   // if attacked was done on even block of gard it;s to much for the king , for no siding ?
+        sum++;
+        if(piece =='n' || piece =='N'){
+
+        }else if(piece =='p' || piece =='P'){
+          // don't matter if it's king gurad but block the path beside and and also make sure ,there is no one is block or backing this piece of shit okay
+        }else if(piece =='b' || piece=='B'){
+
+        }else if(piece=='r' || piece=='R'){
+
+        }else if( piece=='k' || piece =='K'){
+          // block that whole side okay ?
+        }else{
+          // worst possbile we have know how close are these siding thins okay ? 
+        }
+        break;
+      }
+      r+=dr[d];
+      c+=dc[d];
+      loopcount++;
+    };
+
+  }
+  // wait here okay 
+
+};
+
+
+void damagecount(int loopcount,char a,int diff){
+  
+  if(loopcount%2==0){
+    // if kinght
+    
+  }else{
+
+  }
+
+
+}
+
 // after move we would have see if this an checkmate or not , 
 // we cover all the path first // we only have look at kings piece if any those nine squre piece then we have active  this function 
 void checkmate(vector<vector<char>>& board ,int ay,int ax){ // first we have see if king has no way to go , and we don't have piece which can't move then win other side , or we safe with reamining piece , but we don't move so 
 
-  // lower case king
   if(low_case(board[ay][ax])){
-
-
+  // lower case king
+  
   }else{
-    int x=pieces[75][0]/8; // send as k_s
-    int y=pieces[75][0]%8; // send as k_e
-
+  int x=pieces[75][0]/8; // send as k_s
+  int y=pieces[75][0]%8; // send as k_e      
   }
+
 
 
 }
@@ -414,38 +482,137 @@ void rookmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
 }
 
 void queenmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
-
+  
   if((abs(ax-dx)<=8 && abs(ay-dy)==0 ) || ( abs(ax-dx)==0 && abs(ay-dy)<=8)){
     // move function 
   }else if(abs(ax-dx)==abs(ay-dy)){
     // move function also we have put action at same time here , 
   };
-
-
+  
+  
 }
 
 // this piece done idepementally whole , it just fixed jump so we can check there 
 void kigntmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
-
+  
   if( (abs(ax-dx)==1 && abs(ay-dy)==2)  || (abs(ax-dx)==2 && abs(ay-dy)==1) ){
     // moving and actions also moves ,
     
   };
-
+  
   // view 
 }
 
 
 void kingmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
-
+  
   // king must don't move at any of range just place king at safe pount only 
   if(abs(ax-dx)<=1 || abs(ay-dy)<=1){
     if(){     // king capture the piece , but it don't have backed by other one , means it's okay as long it's stayed along side it don't attack king ,
-
+      
     };
   }
-
+  
 }
+
+// 0 1 2      0 0 0  == (--i , --j)  (++i ,  0)  (--i , ++j) 
+// 3 4 5  ==  0 1 0     (0 , --j)    (0  ,  0)    (0 , ++j) 
+// 6 7 8      0 0 0     (++i , --j)  (--i , 0)   (++i , ++j) 
+
+void king_innner_gaurd(**){
+
+  int kingl;
+  int digonal={7,-7,9,-9};
+  int vetical={8,-8,1,-1};
+
+  int dirc[8]={-9,-8,-7,+1,+9}
+  int dic[6]={-9,-8,-7,-9,-1,7}
+
+  // one piece of block okay , 
+  for(int i=0;i<=sizeof(dirc)/sizeof(int);i++){
+    for(int j=0;j<=sizeof(digonal)/sizeof(int));j++){
+      binarySearch()
+      binarySearch()  
+    }
+  }
+
+  for(int i=0;i<=sizeof(dirc)/sizeof(int);i++){
+    for(int j=0;j<=sizeof(digonal)/sizeof(int));j++){
+      binarySearch()
+      binarySearch()  
+    }
+  }
+
+   for(int i=0;i<=sizeof(dic)/sizeof(int);i++){
+    for(int j=0;j<=sizeof(vetical)/sizeof(int));j++){
+      if(i<=2 && j<=1){
+        binarySearch()
+      }
+      binarySearch()
+    }
+  }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main(){
   vector<vector<char>>board{
     {'r','n','b','q','k','b','n','r'}, //0
@@ -471,9 +638,6 @@ int main(){
 
 
 
-// 0 1 2      0 0 0  == (--i , --j)  (++i ,  0)  (--i , ++j) 
-// 3 4 5  ==  0 1 0     (0 , --j)    (0  ,  0)    (0 , ++j) 
-// 6 7 8      0 0 0     (++i , --j)  (--i , 0)   (++i , ++j) 
 //  --i , --j
 //  --i , ++j 
 //  ++i , --j 
