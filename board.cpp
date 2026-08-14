@@ -197,31 +197,80 @@ bool direct_attacked(vector<vector<char>>& board ,int ay,int ax ,int ky,int kx){
 //     return true;
 // }
 
+int pathsafty(int kingpos,int target){
+  // this put in tough stistuation , like do count king with 9 safe way or only 8 surroding king ?? 
+  int sum=0;
+  int diff=kingpos-target/8;
+
+  if(target==int('r') || target==int('R')){
+    sum+=3;
+    // if it's at 2 layen or also in other sence 3 layer anything from king it's damage it 3 , if bleow any level damage is 6 or 5 depend it's digonal to king or not 
+  }else if(target==int('b') || target==int('B')){
+    sum+=2;
+    // always 3 or two depend it's digonal to king or not 
+  }else if(target==int('n') || target==int('N')){      // i will have to think about it bro , okay 
+    // 4 layer it's 1 , 2 , 3 layer it's 1 and kind of 2 bcs it's directly attack king ,
+  }else if(target==int('q') || target==int('Q')){
+    if(diff==4){
+      sum+=4;
+    }else if(diff==3){
+      sum+=5;
+    }else if(diff==2){
+      sum+=7;
+    }
+    // 4 layer it's 4 , 3 will 5 , and at layer 2 it's 7  
+  }else if(target==int('p') || target==int('P')){
+    if(diff>=-1){
+      sum=0;
+    }else{
+      sum++;
+    }
+    // tick to much bro ? only have more it's above direct center of king m top , it's 2 , and other 1 ,but after king bleow give me king 2 layer , it would zero no mattter 
+  }else{
+    sum+=3;
+    // king always of other 3 
+  }
+  if(diff==(diff*8)%8){
+    sum++;
+  }
+
+  return sum;  
+};
+
+
 bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king) {
   // ed-st = diff // so it carry charge or direction where to go 
-  innergard=false;
-  int target=st+(diff);
-  int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
-  int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
-  int reset=-1;   // used as reset point for another serach 
-  int step=abs(ed-st)/abs(diff);
-  while(step){      // what end is already small from beging bro ? 
+  if(st >= 0 && st <= 63 && ed >= 0 && ed <= 63){
+    int target=st+(diff);
+
+    int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
+    int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
+    left=min(right,left);
+    right=max(right,left);
+    
+    if (right >= arr.size()) right = arr.size() - 1;
+    if (left < 0) left = 0;
+
+    int reset=-1;   // used as reset point for another serach 
+    int step=abs(ed-st)/abs(diff);
+    while(step){      // what end is already small from beging bro ? 
       
       while (left <= right) {
         
         int mid = left + (right - left) / 2;
-       
+        
         if(innergard && target==king){
           target+=diff;
         }
-
+        
         if (arr[mid] == target) {
           if(innergard){
-
-          };
-          return true;
+            pathsafty(king,arr[mid]);        
+          }else{
+            return true;
+          }
         }
-
+        
         else if (arr[mid] < target) { 
           // i'm going to left ? okay , and my target already become bigger then there is no way to check for thing from here to left anymore it's sorted array and uiniqe or pass value or it was never then ? so i choose new search from here okay ? 
           if(mid - 1 >= 0 && target > arr[mid - 1]){
@@ -230,10 +279,10 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int ki
           }
           left = mid + 1;
         }
-       
+        
         else {
-           // i'm going to right ? okay , and my target already become smaller then next mid+1 there is nothing more to left to check  
-           if(mid + 1 <= right && target < arr[mid + 1]){
+          // i'm going to right ? okay , and my target already become smaller then next mid+1 there is nothing more to left to check  
+          if(mid + 1 <= right && target < arr[mid + 1]){
             reset=mid;
             break;
           }
@@ -251,8 +300,9 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int ki
       target+=(diff);
     }
     return false;
+  }
 }
-
+  
 
 bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind the code , so don't need this shit char a first 
   sort(temp.begin(), temp.end());
@@ -283,9 +333,9 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
               }else{
                 diff=7;
               }
-             binarySearch(temp,postion,pieces[keep[i]][j],diff*charge);
+             binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
           }else if((keep[i]!=66) && (keep[i]!=98) && (diff%8==0)){ // now just have stop the // same here ? 
-              binarySearch(temp,postion,pieces[keep[i]][j],diff*charge);
+              binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
           }else if ((keep[i]!=66) && (keep[i]!=98) &&  ((postion/8)==(pieces[keep[i]][j]/8)) ){ // this will never right , 
             {
 
@@ -303,7 +353,8 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
                   //   i--;
                   // }
               }
-              binarySearch(temp,postion,pieces[keep[i]][j],1*charge);
+              binarySearch(temp,postion,pieces[keep[i]][j],1*charge,false,postion);
+              //binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king)
           }
       };
     }
@@ -519,45 +570,106 @@ void kingmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
 // 3 4 5  ==  0 1 0     (0 , --j)    (0  ,  0)    (0 , ++j) 
 // 6 7 8      0 0 0     (++i , --j)  (--i , 0)   (++i , ++j) 
 
-void king_innner_gaurd(**){
+void king_innner_gaurd(int king_pos){
 
   int kingl;
-  int digonal={7,-7,9,-9};
-  int vetical={8,-8,1,-1};
+  int digonal[]={7,-7,9,-9};
+  int vetical[]={8,-8,1,-1};
 
-  int dirc[8]={-9,-8,-7,+1,+9}
-  int dic[6]={-9,-8,-7,-9,-1,7}
+  int dirc[5]={-9,-8,-7,+1,+9};
+  int dic[6]={-9,-8,-7,-9,-1,7};
 
-  // one piece of block okay , 
-  for(int i=0;i<=sizeof(dirc)/sizeof(int);i++){
-    for(int j=0;j<=sizeof(digonal)/sizeof(int));j++){
-      binarySearch()
-      binarySearch()  
-    }
-  }
+  for(int i = 0; i < 5; i++){
 
-  for(int i=0;i<=sizeof(dirc)/sizeof(int);i++){
-    for(int j=0;j<=sizeof(digonal)/sizeof(int));j++){
-      binarySearch()
-      binarySearch()  
-    }
-  }
+    int st = king_pos + dirc[i];
+    
+     if (st < 0 || st > 63) continue;
 
-   for(int i=0;i<=sizeof(dic)/sizeof(int);i++){
-    for(int j=0;j<=sizeof(vetical)/sizeof(int));j++){
-      if(i<=2 && j<=1){
-        binarySearch()
+      for(int j=0;j<=1;j++){
+        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
+        j++;
+        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
       }
-      binarySearch()
-    }
+  }
+
+  for(int i = 0; i < 5; i++){  // revrevers strip seach 
+    int st = king_pos + dirc[i]*-1;
+     if (st < 0 || st > 63) continue;
+      for(int j=2;j<=3;j++){
+        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
+        j++;
+        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
+      };
+  }
+
+    // vertical sacnning 
+   for(int i = 0; i < 6; i++){
+
+    int st = king_pos + dic[i];
+    
+     if (st < 0 || st > 63) continue;
+     
+      for(int j=0;j< 4;j++){
+        if(i<=2 && j<=1){
+          binarySearch(temp,st,st+(vetical[j]*3) ,vetical[j], true, king_pos);
+        }else{
+          binarySearch(temp,st,st+(vetical[j]*3) ,vetical[j], true, king_pos);          
+        }
+
+      }
   }
     
 }
 
 
 
+{
 
+  void king_innner_gaurd(int king_pos) {
+    // 1. Define directions and step offsets
+    int dirc[5] = {-9, -8, -7, +1, +9};
+    int diagonal[4] = {7, -7, 9, -9};
+    // 2. Loop through the 5 launching points around the king
+    for (int i = 0; i < 5; i++) {
+    // Calculate the start point of our sweep relative to the King
+    int st = king_pos + dirc[i];
+    
+     // Make sure our start point is actually on the board (0 to 63)
+     if (st < 0 || st > 63) continue;
 
+     // 3. Loop through the 4 diagonal sweep directions
+     for (int j = 0; j < 4; j++) {
+       int diff = diagonal[j];
+
+       // Limit our sweep to 3 blocks away
+       int max_steps = 3;
+       
+       // ---- SWEEP 1: Positive Direction ----
+       int ed_positive = st + (diff * max_steps);
+       // Ensure the end point is on the board
+       if (ed_positive >= 0 && ed_positive <= 63) {
+         // Launch binary search moving forward
+         bool found = binarySearch(temp, st, ed_positive, diff, false, king_pos);
+         if (found) {
+           // You found a piece! You can read its type from the board and evaluate it.
+          }
+        }
+        
+        // ---- SWEEP 2: Reversed Direction ----
+        int ed_negative = st - (diff * max_steps); // Subtract diff to reverse direction
+        if (ed_negative >= 0 && ed_negative <= 63) {
+          // Launch binary search moving backward (negative diff)
+          bool found_rev = binarySearch(temp, st, ed_negative, -diff, false, king_pos);
+          if (found_rev) {
+            // You found a piece in the opposite direction!
+          }
+        }
+        
+      }
+    }
+  }
+  
+}
 
 
 
