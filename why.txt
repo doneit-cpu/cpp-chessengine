@@ -87,3 +87,49 @@
 
 
 
+
+void king_innner_di(int ks){
+  // in this we can take king as center piece and we see other blocks ,
+   int sum=0;
+   int kr = ks / 8;
+   int kc = ks % 8;
+   int loopcount=1;
+  // it start from king top most lefted ? and then goes on to to down-right ? it's lise zig zagg 
+  int dr[]={-1, -1, -1, 0, 0, 1, 1, 1};
+  int dc[]={-1, 0, 1, -1, 1, -1, 0, 1};
+
+  for(int d=0;d<8;d++){
+    int r=kr+dr[d];
+    int c=kc+dc[d];
+
+    while(r>=0 && r<8 && c >=0 && c <8 ){
+      char piece=board[r][c];
+
+      if(piece !='.' && low_case(piece)==low_case(ks)) break;
+
+      if(piece !='.'){   // if attacked was done on even block of gard it;s to much for the king , for no siding ?
+        sum++;
+        if(piece =='n' || piece =='N'){
+
+        }else if(piece =='p' || piece =='P'){
+          // don't matter if it's king gurad but block the path beside and and also make sure ,there is no one is block or backing this piece of shit okay
+        }else if(piece =='b' || piece=='B'){
+
+        }else if(piece=='r' || piece=='R'){
+
+        }else if( piece=='k' || piece =='K'){
+          // block that whole side okay ?
+        }else{
+          // worst possbile we have know how close are these siding thins okay ? 
+        }
+        break;
+      }
+      r+=dr[d];
+      c+=dc[d];
+      loopcount++;
+    };
+
+  }
+  // wait here okay 
+
+};

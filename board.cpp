@@ -58,7 +58,7 @@ bool king_guard[9]={0,0,0,0,0,0,0,0,0};
 // }
 
 
-map<int,bool> lo_p; // lower case pawn
+map<int,bool> lo_p; // lower case paawn
 map<int,bool> Up_p; // higeher case pawn
 
 map <int,bool>k_inner; // kings inner circke srrounding 9 , this would changed each time we move king so make this note 
@@ -170,7 +170,6 @@ bool direct_attacked(vector<vector<char>>& board ,int ay,int ax ,int ky,int kx){
     int y=abs(ax-kx); 
     if(( x==0 || y==0 || x==y )){  // bishop , rook , queen
       if(empaty_path(board,ay,ax,ky,kx)){ //
-
             return true;
           }
       }else if(( x==1 && y==2 ) || ( x==2 && y==1) ){ 
@@ -304,7 +303,7 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int ki
 }
   
 
-bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind the code , so don't need this shit char a first 
+bool indirect_attacked(vector<vector<char>>& board,char a,bool block,int ky,int kx){   // this run behind the code , so don't need this shit char a first 
   sort(temp.begin(), temp.end());
   int keep[6]={66,81,82,98,113,114}; // 
   int postion=pieces[75][0];
@@ -314,6 +313,9 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
     st=0;
     ed=2;
     postion=pieces[107][0];
+  };
+  if(block){
+    postion=8*ky+kx;
   }
     for (int i=st;i<=ed;i++) {
       for (int j=0;j<pieces[keep[i]].size();j++){  //
@@ -333,9 +335,9 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
               }else{
                 diff=7;
               }
-             binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
+            return binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
           }else if((keep[i]!=66) && (keep[i]!=98) && (diff%8==0)){ // now just have stop the // same here ? 
-              binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
+            return binarySearch(temp,postion,pieces[keep[i]][j],diff*charge,false,postion);
           }else if ((keep[i]!=66) && (keep[i]!=98) &&  ((postion/8)==(pieces[keep[i]][j]/8)) ){ // this will never right , 
             {
 
@@ -353,72 +355,76 @@ bool indirect_attacked(vector<vector<char>>& board,char a){   // this run behind
                   //   i--;
                   // }
               }
-              binarySearch(temp,postion,pieces[keep[i]][j],1*charge,false,postion);
+              return binarySearch(temp,postion,pieces[keep[i]][j],1*charge,false,postion);
               //binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king)
           }
       };
     }
-  
+  return false;
 }
 
 
-void king_innner_di(int ks){
-  // in this we can take king as center piece and we see other blocks ,
-   int sum=0;
-   int kr = ks / 8;
-   int kc = ks % 8;
-   int loopcount=1;
-  // it start from king top most lefted ? and then goes on to to down-right ? it's lise zig zagg 
-  int dr[]={-1, -1, -1, 0, 0, 1, 1, 1};
-  int dc[]={-1, 0, 1, -1, 1, -1, 0, 1};
+bool isSafemove(vector<vector<char>>& board, int ky, int kx, int ky_m, int kx_m) {
 
-  for(int d=0;d<8;d++){
-    int r=kr+dr[d];
-    int c=kc+dc[d];
-
-    while(r>=0 && r<8 && c >=0 && c <8 ){
-      char piece=board[r][c];
-
-      if(piece !='.' && low_case(piece)==low_case(ks)) break;
-
-      if(piece !='.'){   // if attacked was done on even block of gard it;s to much for the king , for no siding ?
-        sum++;
-        if(piece =='n' || piece =='N'){
-
-        }else if(piece =='p' || piece =='P'){
-          // don't matter if it's king gurad but block the path beside and and also make sure ,there is no one is block or backing this piece of shit okay
-        }else if(piece =='b' || piece=='B'){
-
-        }else if(piece=='r' || piece=='R'){
-
-        }else if( piece=='k' || piece =='K'){
-          // block that whole side okay ?
-        }else{
-          // worst possbile we have know how close are these siding thins okay ? 
-        }
-        break;
-      }
-      r+=dr[d];
-      c+=dc[d];
-      loopcount++;
-    };
-
+  if (ky_m < 0 || ky_m > 7 || kx_m < 0 || kx_m > 7) {
+    return false;
   }
-  // wait here okay 
 
-};
+  char a = board[ky][kx];
+  int pos = 0;      
+  char pos_p;       
+  int pos_k = 0;    
 
+  if (low_case(a)) {
+    pos = 78;       
+    pos_p = 'P';    
+    pos_k = 75;     
+  } else {
+    pos = 110;      
+    pos_p = 'p';    
+    pos_k = 107;    
+  }
 
-void damagecount(int loopcount,char a,int diff){
+  if (board[ky_m][kx_m] != '.') {
+    if (low_case(board[ky_m][kx_m]) == low_case(a)) {
+      return false;
+    }
+  }
+
+  if (indirect_attacked(board, a, true, ky_m, kx_m)) {
+    return false;
+  }
+
+  int x;
+  int y;
+  for (int i = 0; i < pieces[pos].size(); i++) {
+    x = abs(ky_m - (pieces[pos][i] / 8));
+    y = abs(kx_m - (pieces[pos][i] % 8)); // Fixed: use kx_m for column
+    if ((x == 1 && y == 2) || (x == 2 && y == 1)) {
+      return false; // Attacked by Knight -> NOT safe
+    }
+  }
+
+  int pawn_y = low_case(a) ? (ky_m + 1) : (ky_m - 1);
+  if (pawn_y >= 0 && pawn_y < 8) {
+    if (kx_m - 1 >= 0 && board[pawn_y][kx_m - 1] == pos_p) {
+      return false; // Attacked by Pawn -> NOT safe
+    }
+    if (kx_m + 1 < 8 && board[pawn_y][kx_m + 1] == pos_p) {
+      return false; // Attacked by Pawn -> NOT safe
+    }
+  }
+
+  if (pieces[pos_k].size() > 0) {
+    x = abs(ky_m - (pieces[pos_k][0] / 8));
+    y = abs(kx_m - (pieces[pos_k][0] % 8)); 
+    if (x <= 1 && y <= 1) {
+      return false; 
+    }
+  }
+
   
-  if(loopcount%2==0){
-    // if kinght
-    
-  }else{
-
-  }
-
-
+  return true;
 }
 
 // after move we would have see if this an checkmate or not , 
@@ -436,8 +442,6 @@ void checkmate(vector<vector<char>>& board ,int ay,int ax){ // first we have see
 
 
 }
-
-
 
 // black are in lowecase ,
 
@@ -566,9 +570,9 @@ void kingmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
   
 }
 
-// 0 1 2      0 0 0  == (--i , --j)  (++i ,  0)  (--i , ++j) 
-// 3 4 5  ==  0 1 0     (0 , --j)    (0  ,  0)    (0 , ++j) 
-// 6 7 8      0 0 0     (++i , --j)  (--i , 0)   (++i , ++j) 
+// 0 1 2      0 0 0  ==  (--i, --j)   (--i,  j)   (--i, ++j) 
+// 3 4 5  ==  0 1 0      (  i, --j)   (  i,  j)   (  i, ++j) 
+// 6 7 8      0 0 0      (++i, --j)   (++i,  j)   (++i, ++j)
 
 void king_innner_gaurd(int king_pos){
 
@@ -622,109 +626,6 @@ void king_innner_gaurd(int king_pos){
 }
 
 
-
-{
-
-  void king_innner_gaurd(int king_pos) {
-    // 1. Define directions and step offsets
-    int dirc[5] = {-9, -8, -7, +1, +9};
-    int diagonal[4] = {7, -7, 9, -9};
-    // 2. Loop through the 5 launching points around the king
-    for (int i = 0; i < 5; i++) {
-    // Calculate the start point of our sweep relative to the King
-    int st = king_pos + dirc[i];
-    
-     // Make sure our start point is actually on the board (0 to 63)
-     if (st < 0 || st > 63) continue;
-
-     // 3. Loop through the 4 diagonal sweep directions
-     for (int j = 0; j < 4; j++) {
-       int diff = diagonal[j];
-
-       // Limit our sweep to 3 blocks away
-       int max_steps = 3;
-       
-       // ---- SWEEP 1: Positive Direction ----
-       int ed_positive = st + (diff * max_steps);
-       // Ensure the end point is on the board
-       if (ed_positive >= 0 && ed_positive <= 63) {
-         // Launch binary search moving forward
-         bool found = binarySearch(temp, st, ed_positive, diff, false, king_pos);
-         if (found) {
-           // You found a piece! You can read its type from the board and evaluate it.
-          }
-        }
-        
-        // ---- SWEEP 2: Reversed Direction ----
-        int ed_negative = st - (diff * max_steps); // Subtract diff to reverse direction
-        if (ed_negative >= 0 && ed_negative <= 63) {
-          // Launch binary search moving backward (negative diff)
-          bool found_rev = binarySearch(temp, st, ed_negative, -diff, false, king_pos);
-          if (found_rev) {
-            // You found a piece in the opposite direction!
-          }
-        }
-        
-      }
-    }
-  }
-  
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int main(){
   vector<vector<char>>board{
     {'r','n','b','q','k','b','n','r'}, //0
@@ -742,13 +643,7 @@ int main(){
 }
 // each piece can target by at least 4 maximum side ,also how can i tell if it's coming from which direction , or what direction 
 
-
-
-
-
 // now to cover up slide line , first we can do thing we just need to directions , just make sure when they reach king inner circle , will would lunch attck or somthing like that from innerr to make we have block or not  if it's diagonal then we just need 7 one trick , like we minus 7 to see if we below number or not ,  
-
-
 
 //  --i , --j
 //  --i , ++j 
@@ -789,14 +684,14 @@ int main(){
 // }
 
 
-// this below u can see how it's working 
-void jojo() {
-    int x=41-59;  // king number - 9 -given postion in inner circle 
-    x=abs(x);     
-    cout << x << "\n";
-    int y=(x/8)*3+(x-(x/8)*8);   // (x-(x/8)*8) this work like remaider , and at y is number of map key which repesent the king inner circle 
-    cout << y << "\n";
-}
+// // this below u can see how it's working 
+// void jojo() {
+//     int x=41-59;  // king number - 9 -given postion in inner circle 
+//     x=abs(x);     
+//     cout << x << "\n";
+//     int y=(x/8)*3+(x-(x/8)*8);   // (x-(x/8)*8) this work like remaider , and at y is number of map key which repesent the king inner circle 
+//     cout << y << "\n";
+// }
 
 
 // i don't want used that map yet , there might any othe way we can might do that ? but how 
@@ -814,8 +709,5 @@ void jojo() {
 
 // for ( whether to remove piece from the king front or not we would take diff x and y) this i just see if king attacked x==0 || y==0  || x==y , after i would do the oppsite signs , postion to neagative also visa -versa , and check that piece can attack we stay if not remove  , it's easit and optimize compare to always look all piece , or king arround check , here we just need check one time , and that's it  [this would work if linear sliding piece are attacking ]
 // find draw condition also
-
-
-
 
 
