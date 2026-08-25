@@ -14,6 +14,87 @@
 #include <algorithm>
 using namespace std;
 
+// --> new idea for for replacing map of pieces with direct refence varible of check piece array , like i learn that all i need is that track or get picec info whenever i want and map is kind of doing over to much ( like c++ map made tree and complexity behind the since ) , so i'm making code in the language y don't use it specail feature like * pointers
+{   // this all is plan for now , but  i would like too do this in future okay 
+
+//what i can do is to give this postion when i need like slider and thing okay ,so when the it goes to last array indec it used , also other function wait while it compeleted it work and send or whatever for wanting other array location how is this ? 
+// int bishop_p[2]={65,64}   // just assume postion are really for once ,
+// int rook_p[2]={15,64}
+// int kight_p[2]={05,64}
+// int k_p[2]={35}
+
+// function *look_a(int number){
+//   // u can acceses only 3 first array ? 
+//   int *care;
+//   if(number==3){   //recursion first okay
+
+
+
+//     // first take last value of this whatever array u have 
+//   }
+
+
+
+// }
+
+// above code for it --> { 
+
+//   #include <iostream>
+
+// // Global arrays representing pieces
+// int bishop_p[2] = {65, 64};
+// int rook_p[2]   = {15, 64};
+// int knight_p[2] = {5, 64};  // Note: Avoid leading zeros like '05' in C++ as it means Octal
+// int k_p[1]      = {35};
+
+// // A simple lock to make other functions wait if the array is busy
+// bool is_array_busy = false;
+
+// // Function returns a pointer to an integer (the start of the selected array)
+// int* look_a(int number) {
+//     // If the system is busy, you can block or return null
+//     if (is_array_busy) {
+//         std::cout << "System busy. Waiting...\n";
+//         return nullptr; 
+//     }
+
+//     // Reference switching logic using standard conditional blocks
+//     if (number == 0) return bishop_p;
+//     if (number == 1) return rook_p;
+//     if (number == 2) return knight_p;
+//     if (number == 3) return k_p;
+
+//     return nullptr; // Safety fallback
+// }
+
+// int main() {
+//     // 1. Accessing an array dynamically via the pointer function
+//     int* current_piece = look_a(1); // Selects rook_p
+
+//     if (current_piece != nullptr) {
+//         // Lock the system while working
+//         is_array_busy = true; 
+
+//         // Read or change values directly
+//         std::cout << "Rook initial X: " << current_piece[0] << "\n"; // Outputs 15
+        
+//         // Simulating work: Modifying the original rook_p array through the pointer
+//         current_piece[0] = 20; 
+
+//         // Work finished, unlock the system
+//         is_array_busy = false; 
+//     }
+
+//     // Verify the original array actually changed
+//     std::cout << "Original Rook X updated to: " << rook_p[0] << "\n"; // Outputs 20
+
+//     return 0;
+// }
+
+// }
+
+}
+
 // ascii , position , i don't really need the pawn position they can only attack one block ahead , so do it removing is best move ,
 map<int, vector<int>> pieces = {     // make it for runtime or something like that , like ? dynamic which change thing on it's own something like that 
     {81,  {59}},                 // Q
@@ -709,5 +790,3 @@ int main(){
 
 // for ( whether to remove piece from the king front or not we would take diff x and y) this i just see if king attacked x==0 || y==0  || x==y , after i would do the oppsite signs , postion to neagative also visa -versa , and check that piece can attack we stay if not remove  , it's easit and optimize compare to always look all piece , or king arround check , here we just need check one time , and that's it  [this would work if linear sliding piece are attacking ]
 // find draw condition also
-
-
