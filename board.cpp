@@ -280,6 +280,7 @@ bool direct_attacked(vector<vector<char>>& board ,int ay,int ax ,int ky,int kx){
 int pathsafty(int kingpos,int target){
   // this put in tough stistuation , like do count king with 9 safe way or only 8 surroding king ?? 
   int sum=0;
+
   int diff=kingpos-target/8;
 
   if(target==int('r') || target==int('R')){
@@ -320,6 +321,15 @@ int pathsafty(int kingpos,int target){
 
 bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king) {
   // ed-st = diff // so it carry charge or direction where to go 
+  if(innergard){
+    int diff;
+     if(st >= 0 && st <= 63 ){
+      diff=st-63;
+     }else if( ed >= 0 && ed <= 63){
+      diff=
+     }
+  }
+
   if(st >= 0 && st <= 63 && ed >= 0 && ed <= 63){
     int target=st+(diff);
 
@@ -651,41 +661,46 @@ void kingmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
   
 }
 
-// 0 1 2      0 0 0  ==  (--i, --j)   (--i,  j)   (--i, ++j) 
-// 3 4 5  ==  0 1 0      (  i, --j)   (  i,  j)   (  i, ++j) 
-// 6 7 8      0 0 0      (++i, --j)   (++i,  j)   (++i, ++j)
+// 0 41 2      0 0 0  ==  (--i, --j)   (--i,  j)   (--i, ++j) 
+// 3 48 5  ==  0 1 0      (  i, --j)   (  i,  j)   (  i, ++j) 
+// 6 56 8      0 0 0      (++i, --j)   (++i,  j)   (++i, ++j)
 
 void king_innner_gaurd(int king_pos){
 
   int kingl;
   int digonal[]={7,-7,9,-9};
   int vetical[]={8,-8,1,-1};
-
-  int dirc[5]={-9,-8,-7,+1,+9};
-  int dic[6]={-9,-8,-7,-9,-1,7};
+  int steps=3;
+  int dirc[5]={-9,-8,-7,-1,+9};
+  int dirc_r[5]={-7,-8,-9,1,7};
+  int dic[6]={-9,-8,-7,-9,1,7};
 
   for(int i = 0; i < 5; i++){
 
-    int st = king_pos + dirc[i];
-    
-     if (st < 0 || st > 63) continue;
+    if(i<=2){
+      steps++;
+    }else{
+      steps--;
+    }
 
-      for(int j=0;j<=1;j++){
-        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
-        j++;
+    int st = king_pos + dirc[i];
+  
+     for(int j=0;j<=1;j++){
+       binarySearch(temp,st,st+(digonal[j]*steps) ,digonal[j], true, king_pos);
+       j++;
+       steps++;
         binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
       }
-  }
 
-  for(int i = 0; i < 5; i++){  // revrevers strip seach 
-    int st = king_pos + dirc[i]*-1;
-     if (st < 0 || st > 63) continue;
+      st = king_pos + dirc_r[i];
+
       for(int j=2;j<=3;j++){
         binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
         j++;
-        binarySearch(temp,st,st+(digonal[j]*3) ,digonal[j], true, king_pos);
+        binarySearch(temp,st,st+(digonal[j]*5) ,digonal[j], true, king_pos);
       };
   }
+
 
     // vertical sacnning 
    for(int i = 0; i < 6; i++){
@@ -790,3 +805,8 @@ int main(){
 
 // for ( whether to remove piece from the king front or not we would take diff x and y) this i just see if king attacked x==0 || y==0  || x==y , after i would do the oppsite signs , postion to neagative also visa -versa , and check that piece can attack we stay if not remove  , it's easit and optimize compare to always look all piece , or king arround check , here we just need check one time , and that's it  [this would work if linear sliding piece are attacking ]
 // find draw condition also
+ 
+
+
+
+/////still thking 
