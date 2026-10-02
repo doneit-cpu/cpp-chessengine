@@ -634,8 +634,6 @@ void queenmove(vector<vector<char>>& board, int ay, int ax , int dy , int dx){
   }else if(abs(ax-dx)==abs(ay-dy)){
     // move function also we have put action at same time here , 
   };
-  
-  
 }
 
 // this piece done idepementally whole , it just fixed jump so we can check there 
@@ -806,7 +804,7 @@ int main(){
 // for ( whether to remove piece from the king front or not we would take diff x and y) this i just see if king attacked x==0 || y==0  || x==y , after i would do the oppsite signs , postion to neagative also visa -versa , and check that piece can attack we stay if not remove  , it's easit and optimize compare to always look all piece , or king arround check , here we just need check one time , and that's it  [this would work if linear sliding piece are attacking ]
 // find draw condition also
  
-
-
-
 /////still thking 
+
+
+//// git add dgsdg
