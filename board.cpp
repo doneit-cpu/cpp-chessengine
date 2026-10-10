@@ -319,21 +319,29 @@ int pathsafty(int kingpos,int target){
 };
 
 
-bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king) {
+bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int king) {             /// last thing todo is 2d wrap around check okay 
   // ed-st = diff // so it carry charge or direction where to go 
-  if(innergard){
-    int diff;
-     if(st >= 0 && st <= 63 ){
-      diff=st-63;
-     }else if( ed >= 0 && ed <= 63){
-      diff=
-     }
-  }
+  
+  // if(innergard){
+  //   int diff;
+  //    if(st >= 0 && st <= 63 ){
+  //     diff=st-63;
+  //    }else if( ed >= 0 && ed <= 63){
+  //     diff=ed-63;
+  //    }
+  // }
+
+  int wrap=0;
 
   if(st >= 0 && st <= 63 && ed >= 0 && ed <= 63){
     int target=st+(diff);
 
-    int right = lower_bound(arr.begin(), arr.end(), ed) - arr.begin();
+    int right = 0;
+
+    if(diff>0){
+      right=arr.size();
+    }
+
     int left = lower_bound(arr.begin(), arr.end(), st) - arr.begin();
     left=min(right,left);
     right=max(right,left);
@@ -349,6 +357,14 @@ bool binarySearch(vector<int>& arr,int st,int ed ,int diff,bool innergard,int ki
         
         int mid = left + (right - left) / 2;
         
+        if(abs(diff)!=1 && king/8==(mid/8)+1 ){ // it's stop from making it 1d serach but put it as 2d one ;
+          wrap+=1;
+        }else{
+          /// make sure it's running perfect but also don't give me code , i would have make it more okay 
+        }
+
+
+
         if(innergard && target==king){
           target+=diff;
         }
